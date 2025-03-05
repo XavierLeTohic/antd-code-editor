@@ -1,0 +1,1 @@
+export { AntdMonacoEditor } from "./AntdMonacoEditor";
