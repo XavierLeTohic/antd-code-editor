@@ -11,6 +11,7 @@ export default defineConfig({
       'types': './src/types/*',
       'components': './src/components/*',
       'contexts': './src/contexts/*',
+      'constants': './src/constants/*',
     }
   },
   lib: [

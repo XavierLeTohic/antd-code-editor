@@ -3,6 +3,7 @@ import { Input, Tooltip } from "antd";
 
 import { FileOutlined } from "@ant-design/icons";
 import { Flex } from "antd";
+import { TREE_TMP_KEY } from "constants/tree";
 import { useTree } from "contexts/tree/TreeContext";
 import { useState } from "react";
 
@@ -24,7 +25,7 @@ function NewFileInput() {
 		}
 
 		const isDuplicate = currentTree.some((node) => {
-			return node.key === inputValue;
+			return node.key.toString() === inputValue;
 		});
 
 		if (isDuplicate) {
@@ -33,7 +34,7 @@ function NewFileInput() {
 		}
 
 		const newTree = currentTree.map((node) => {
-			if (node.key === "tmp") {
+			if (node.key.toString().includes(TREE_TMP_KEY)) {
 				return {
 					...node,
 					key: inputValue,
@@ -58,7 +59,7 @@ function NewFileInput() {
 			}
 
 			const newTree = currentTree.filter((node) => {
-				return node.key !== "tmp";
+				return !node.key.toString().includes(TREE_TMP_KEY);
 			});
 
 			overrideTree(newTree);

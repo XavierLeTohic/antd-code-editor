@@ -18,7 +18,7 @@ function FileExplorer() {
 	const onAddFile = async () => {
 		console.log("add file");
 
-		await addFile("test.txt", "test");
+		await addFile("test.txt");
 
 		refresh();
 	};

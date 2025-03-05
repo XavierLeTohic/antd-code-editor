@@ -10,10 +10,15 @@ import {
 import type { TreeData, TreeManagerInterface } from "types/tree";
 import { TreeManager } from "./TreeManager";
 
-interface TreeContextType extends TreeManagerInterface {
+interface TreeContextType {
 	tree: TreeData;
 	overrideTree: (tree: TreeData) => void;
 	refresh: () => Promise<void>;
+	addFile(path: string): Promise<void>;
+	addDirectory(path: string): Promise<void>;
+	move(sourcePath: string, targetPath: string): Promise<void>;
+	delete(path: string): Promise<void>;
+	getTree(): Promise<TreeData>;
 }
 
 const TreeContext = createContext<TreeContextType | undefined>(undefined);
