@@ -14,8 +14,8 @@ interface TreeContextType {
 	tree: TreeData;
 	overrideTree: (tree: TreeData) => void;
 	refresh: () => Promise<void>;
-	addFile(path: string): Promise<void>;
-	addDirectory(path: string): Promise<void>;
+	addFile(path?: string): Promise<void>;
+	addDirectory(path?: string): Promise<void>;
 	move(sourcePath: string, targetPath: string): Promise<void>;
 	delete(path: string): Promise<void>;
 	getTree(): Promise<TreeData>;
@@ -49,8 +49,8 @@ export const TreeProvider = ({ children }: TreeProviderProps) => {
 	}, [treeManager]);
 
 	const addFile = useCallback(
-		async (path: string, content: string) => {
-			await treeManager.addFile(path, content);
+		async (path?: string) => {
+			await treeManager.addFile(path);
 			await refresh();
 		},
 		[treeManager, refresh],

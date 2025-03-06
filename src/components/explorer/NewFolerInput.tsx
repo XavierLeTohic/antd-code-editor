@@ -1,4 +1,4 @@
-import { EnterOutlined } from "@ant-design/icons";
+import { EnterOutlined, FolderOutlined } from "@ant-design/icons";
 import { Input, Tooltip } from "antd";
 
 import { FileOutlined } from "@ant-design/icons";
@@ -7,7 +7,7 @@ import { TREE_TMP_KEY } from "constants/tree";
 import { useTree } from "contexts/tree/TreeContext";
 import { useState } from "react";
 
-function NewFileInput() {
+function NewFolderInput() {
 	const { tree, refresh, getTree, overrideTree } = useTree();
 	const [isDuplicate, setIsDuplicate] = useState(false);
 
@@ -39,10 +39,26 @@ function NewFileInput() {
 					...node,
 					key: inputValue,
 					title: inputValue,
-					icon: <FileOutlined />,
+					icon: <FolderOutlined />,
+					isLeaf: false,
+					children: [],
 				};
 			}
 			return node;
+		});
+
+		overrideTree(newTree);
+	};
+
+	const onCancel = async () => {
+		const currentTree = await getTree();
+
+		if (!currentTree) {
+			return;
+		}
+
+		const newTree = currentTree.filter((node) => {
+			return !node.key.toString().includes(TREE_TMP_KEY);
 		});
 
 		overrideTree(newTree);
@@ -52,17 +68,7 @@ function NewFileInput() {
 		e: React.KeyboardEvent<HTMLInputElement>,
 	) => {
 		if (e.key === "Escape") {
-			const currentTree = await getTree();
-
-			if (!currentTree) {
-				return;
-			}
-
-			const newTree = currentTree.filter((node) => {
-				return !node.key.toString().includes(TREE_TMP_KEY);
-			});
-
-			overrideTree(newTree);
+			onCancel();
 		}
 	};
 
@@ -87,23 +93,24 @@ function NewFileInput() {
 
 	return (
 		<Flex align="center" gap={8}>
-			<FileOutlined />
+			<FolderOutlined />
 			<Tooltip
 				color="red"
 				open={isDuplicate}
 				placement="bottom"
 				title={
 					isDuplicate
-						? "A file with this name already exists at this location"
+						? "A folder with this name already exists at this location"
 						: null
 				}
 			>
 				<Input
-					placeholder="Enter file name"
+					placeholder="Enter folder name"
 					size="small"
 					autoFocus
 					onPressEnter={onPressEnter}
 					onKeyDown={onFileNameKeyDown}
+					onBlur={onCancel}
 					onChange={onChange}
 					status={isDuplicate ? "error" : undefined}
 					suffix={<EnterOutlined />}
@@ -113,4 +120,4 @@ function NewFileInput() {
 	);
 }
 
-export default NewFileInput;
+export default NewFolderInput;

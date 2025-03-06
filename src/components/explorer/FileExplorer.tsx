@@ -11,20 +11,24 @@ import { useTree } from "contexts/tree/TreeContext";
 const { Text } = Typography;
 
 function FileExplorer() {
-	const { tree, addFile, refresh } = useTree();
+	const { tree, addFile, addDirectory, refresh } = useTree();
 
 	console.log("render", tree);
 
 	const onAddFile = async () => {
 		console.log("add file");
 
-		await addFile("test.txt");
+		await addFile();
 
 		refresh();
 	};
 
-	const onAddFolder = () => {
+	const onAddFolder = async () => {
 		console.log("add folder");
+
+		await addDirectory();
+
+		refresh();
 	};
 
 	return (
