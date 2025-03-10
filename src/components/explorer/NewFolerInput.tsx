@@ -7,7 +7,7 @@ import { TREE_TMP_KEY } from "constants/tree";
 import { useTree } from "contexts/tree/TreeContext";
 import { useState } from "react";
 
-function NewFolderInput() {
+function NewFolderInput({ path }: { path: string }) {
 	const { tree, refresh, getTree, overrideTree } = useTree();
 	const [isDuplicate, setIsDuplicate] = useState(false);
 
@@ -25,7 +25,7 @@ function NewFolderInput() {
 		}
 
 		const isDuplicate = currentTree.some((node) => {
-			return node.key.toString() === inputValue;
+			return node.key.toString() === `${path}/${inputValue}`;
 		});
 
 		if (isDuplicate) {
@@ -37,7 +37,7 @@ function NewFolderInput() {
 			if (node.key.toString().includes(TREE_TMP_KEY)) {
 				return {
 					...node,
-					key: inputValue,
+					key: `${path}/${inputValue}`,
 					title: inputValue,
 					icon: <FolderOutlined />,
 					isLeaf: false,
@@ -80,7 +80,7 @@ function NewFolderInput() {
 		}
 
 		const isDuplicate = tree.some((node) => {
-			return node.key === inputValue;
+			return node.key.toString() === `${path}/${inputValue}`;
 		});
 
 		if (!isDuplicate) {

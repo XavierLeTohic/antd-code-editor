@@ -32,7 +32,7 @@ export class TreeManager implements TreeManagerInterface {
 		tree.push({
 			key: `${path}/${TREE_TMP_KEY}`,
 			icon: () => null,
-			title: <NewFileInput />,
+			title: <NewFileInput path={path} />,
 			isLeaf: true,
 		});
 
@@ -50,7 +50,7 @@ export class TreeManager implements TreeManagerInterface {
 		tree.push({
 			key: `${path}/${TREE_TMP_KEY}`,
 			icon: () => null,
-			title: <NewFolderInput />,
+			title: <NewFolderInput path={path} />,
 			isLeaf: true,
 		});
 
