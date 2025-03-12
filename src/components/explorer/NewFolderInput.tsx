@@ -85,10 +85,22 @@ function NewFolderInput({ path }: { path: string }) {
 			return;
 		}
 
-		const newTree = currentTree.filter((node) => {
-			return !node.key.toString().includes(TREE_TMP_KEY);
-		});
+		const removeTemporaryNode = (nodes: DataNode[]) => {
+			return nodes.reduce((acc: DataNode[], node) => {
+				if (node.key.toString().includes(TREE_TMP_KEY)) {
+					return acc;
+				}
 
+				const newNode = { ...node };
+				if (node.children?.length) {
+					newNode.children = removeTemporaryNode(node.children);
+				}
+
+				return acc.concat(newNode);
+			}, []);
+		};
+
+		const newTree = removeTemporaryNode(currentTree);
 		overrideTree(newTree);
 	};
 

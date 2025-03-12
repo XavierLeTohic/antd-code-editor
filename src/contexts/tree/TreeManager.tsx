@@ -2,7 +2,7 @@ import { EnterOutlined, FileOutlined } from "@ant-design/icons";
 import { Flex, Input } from "antd";
 import type { DataNode } from "antd/lib/tree";
 import NewFileInput from "components/explorer/NewFileInput";
-import NewFolderInput from "components/explorer/NewFolerInput";
+import NewFolderInput from "components/explorer/NewFolderInput";
 import { TREE_ROOT_KEY, TREE_TMP_KEY } from "constants/tree";
 import type { PersisterStrategy } from "types/persister";
 import type { TreeData, TreeManagerInterface } from "types/tree";
