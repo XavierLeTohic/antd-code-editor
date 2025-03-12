@@ -9,8 +9,10 @@ import {
 	Divider,
 	Dropdown,
 	Flex,
+	type GetRef,
 	type MenuProps,
 	Tooltip,
+	type Tree,
 	Typography,
 } from "antd";
 import type { DataNode, EventDataNode, TreeProps } from "antd/lib/tree";
@@ -25,18 +27,13 @@ const { Text } = Typography;
 function FileExplorer() {
 	const { tree, addFile, addDirectory, refresh } = useTree();
 	const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
-	const treeRef = useRef<any>(null);
+	const treeRef = useRef(null);
 
 	const [selectedNode, setSelectedNode] =
 		useState<EventDataNode<DataNode> | null>(null);
 
-	console.log("render", tree);
-
 	const onAddFile = async () => {
-		console.log("add file");
-
 		await addFile();
-
 		refresh();
 	};
 
@@ -55,6 +52,7 @@ function FileExplorer() {
 
 				await onAddFolder(selectedNode.key.toString());
 
+				// Expland the new folder to display the input to set the name
 				if (treeRef.current) {
 					setExpandedKeys((prevState) => [...prevState, selectedNode.key]);
 				}
@@ -62,15 +60,16 @@ function FileExplorer() {
 		},
 	];
 
-	const onSelectNodes = (selectedKeys: Key[], info: any) => {
+	const onSelectNodes: TreeProps["onSelect"] = (selectedKeys, info) => {
 		console.log("selectedKeys", selectedKeys, info);
 	};
 
-	const onRightClick = ({
-		e,
-		node,
-	}: { e: MouseEvent; node: EventDataNode<DataNode> }) => {
+	const onRightClick: TreeProps["onRightClick"] = ({ node }) => {
 		setSelectedNode(node);
+	};
+
+	const onExpand: TreeProps["onExpand"] = (expandedKeysValue) => {
+		setExpandedKeys(expandedKeysValue);
 	};
 
 	return (
@@ -112,12 +111,13 @@ function FileExplorer() {
 				<DirectoryTree
 					treeData={tree}
 					ref={treeRef}
-					showLine
-					draggable
 					defaultExpandAll
 					expandedKeys={expandedKeys}
 					onSelect={onSelectNodes}
 					onRightClick={onRightClick as any}
+					onExpand={onExpand}
+					draggable={{ icon: false }}
+					showLine
 				/>
 			</Dropdown>
 		</>

@@ -61,7 +61,7 @@ function NewFolderInput({ path }: { path: string }) {
 					node.key = folderPath;
 					node.title = inputValue;
 					node.icon = <FolderOutlined />;
-					node.isLeaf = true;
+					node.isLeaf = false;
 					node.children = [];
 
 					return;
