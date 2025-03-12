@@ -27,6 +27,7 @@ const { Text } = Typography;
 function FileExplorer() {
 	const { tree, addFile, addDirectory, refresh } = useTree();
 	const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
+	const [selectedKeys, setSelectedKeys] = useState<Key[]>([]);
 	const treeRef = useRef(null);
 
 	const [selectedNode, setSelectedNode] =
@@ -38,7 +39,19 @@ function FileExplorer() {
 	};
 
 	const onAddFolder = async (path = TREE_ROOT_KEY) => {
-		await addDirectory(path);
+		console.log("selectedKeys", selectedKeys);
+
+		// Do nothing if multiple nodes are selected
+		if (selectedKeys.length > 1) {
+			return;
+		}
+
+		if (selectedKeys.length === 1) {
+			await addDirectory(selectedKeys[0].toString());
+		} else {
+			await addDirectory(path);
+		}
+
 		refresh();
 	};
 
@@ -61,7 +74,7 @@ function FileExplorer() {
 	];
 
 	const onSelectNodes: TreeProps["onSelect"] = (selectedKeys, info) => {
-		console.log("selectedKeys", selectedKeys, info);
+		setSelectedKeys(selectedKeys);
 	};
 
 	const onRightClick: TreeProps["onRightClick"] = ({ node }) => {
