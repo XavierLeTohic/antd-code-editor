@@ -1,17 +1,34 @@
 import {
 	FileAddOutlined,
 	FolderAddOutlined,
+	FolderOutlined,
 	ReloadOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Flex, Tooltip, Typography } from "antd";
-import DirectoryTree from "antd/es/tree/DirectoryTree";
+import {
+	Button,
+	Divider,
+	Dropdown,
+	Flex,
+	type MenuProps,
+	Tooltip,
+	Typography,
+} from "antd";
+import type { DataNode, EventDataNode, TreeProps } from "antd/lib/tree";
+import DirectoryTree from "antd/lib/tree/DirectoryTree";
+import { TREE_ROOT_KEY, TREE_TMP_KEY } from "constants/tree";
 import { usePersister } from "contexts/persister";
 import { useTree } from "contexts/tree/TreeContext";
+import { type Key, useRef, useState } from "react";
 
 const { Text } = Typography;
 
 function FileExplorer() {
 	const { tree, addFile, addDirectory, refresh } = useTree();
+	const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
+	const treeRef = useRef<any>(null);
+
+	const [selectedNode, setSelectedNode] =
+		useState<EventDataNode<DataNode> | null>(null);
 
 	console.log("render", tree);
 
@@ -23,12 +40,37 @@ function FileExplorer() {
 		refresh();
 	};
 
-	const onAddFolder = async () => {
-		console.log("add folder");
-
-		await addDirectory();
-
+	const onAddFolder = async (path = TREE_ROOT_KEY) => {
+		await addDirectory(path);
 		refresh();
+	};
+
+	const contextMenuItems: MenuProps["items"] = [
+		{
+			key: "new-folder",
+			label: "New Folder",
+			icon: <FolderOutlined />,
+			onClick: async () => {
+				if (!selectedNode) return;
+
+				await onAddFolder(selectedNode.key.toString());
+
+				if (treeRef.current) {
+					setExpandedKeys((prevState) => [...prevState, selectedNode.key]);
+				}
+			},
+		},
+	];
+
+	const onSelectNodes = (selectedKeys: Key[], info: any) => {
+		console.log("selectedKeys", selectedKeys, info);
+	};
+
+	const onRightClick = ({
+		e,
+		node,
+	}: { e: MouseEvent; node: EventDataNode<DataNode> }) => {
+		setSelectedNode(node);
 	};
 
 	return (
@@ -51,7 +93,7 @@ function FileExplorer() {
 					<Tooltip title="New folder...">
 						<Button
 							icon={<FolderAddOutlined />}
-							onClick={onAddFolder}
+							onClick={() => onAddFolder(TREE_ROOT_KEY)}
 							type="text"
 							alt="Add folder"
 						/>
@@ -66,7 +108,18 @@ function FileExplorer() {
 				</div>
 			</Flex>
 			<Divider style={{ margin: 0 }} />
-			<DirectoryTree treeData={tree} multiple draggable defaultExpandAll />
+			<Dropdown menu={{ items: contextMenuItems }} trigger={["contextMenu"]}>
+				<DirectoryTree
+					treeData={tree}
+					ref={treeRef}
+					showLine
+					draggable
+					defaultExpandAll
+					expandedKeys={expandedKeys}
+					onSelect={onSelectNodes}
+					onRightClick={onRightClick as any}
+				/>
+			</Dropdown>
 		</>
 	);
 }

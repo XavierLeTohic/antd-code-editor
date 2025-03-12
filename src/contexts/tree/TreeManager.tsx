@@ -1,5 +1,6 @@
 import { EnterOutlined, FileOutlined } from "@ant-design/icons";
 import { Flex, Input } from "antd";
+import type { DataNode } from "antd/lib/tree";
 import NewFileInput from "components/explorer/NewFileInput";
 import NewFolderInput from "components/explorer/NewFolerInput";
 import { TREE_ROOT_KEY, TREE_TMP_KEY } from "constants/tree";
@@ -40,19 +41,53 @@ export class TreeManager implements TreeManagerInterface {
 		// Note: not persisting until the filename is set with NewFileInput
 	}
 
-	async addDirectory(path?: string): Promise<void> {
+	async addDirectory(path = TREE_ROOT_KEY): Promise<void> {
 		const existingTree = await this.getTree();
 		let tree = existingTree ? [...existingTree] : [];
 
 		// Filter out any tmp nodes
 		tree = tree.filter((node) => !node.key.toString().includes(TREE_TMP_KEY));
 
-		tree.push({
-			key: `${path}/${TREE_TMP_KEY}`,
-			icon: () => null,
-			title: <NewFolderInput path={path} />,
-			isLeaf: true,
-		});
+		const isRoot = path === TREE_ROOT_KEY;
+
+		if (isRoot) {
+			tree.push({
+				key: `${path}/${TREE_TMP_KEY}`,
+				icon: () => null,
+				title: <NewFolderInput path={path} />,
+				isLeaf: true,
+			});
+		} else {
+			const findNodeAndInsert = (treeData: DataNode[]) => {
+				for (let i = 0; i < treeData.length; i++) {
+					const node = treeData[i];
+
+					console.log("Checking node:", node.key.toString());
+					console.log("Path:", path);
+
+					if (node.key.toString() === path) {
+						if (!node.children) {
+							node.children = [];
+						}
+
+						console.log("Will add tmp folder", `${path}${TREE_TMP_KEY}`);
+
+						node.children?.push({
+							key: `${path}${TREE_TMP_KEY}/`,
+							icon: () => null,
+							title: <NewFolderInput path={path} />,
+							isLeaf: true,
+						});
+					}
+
+					if (node.children) {
+						findNodeAndInsert(node.children);
+					}
+				}
+			};
+
+			findNodeAndInsert(tree);
+		}
 
 		this.tree = tree;
 		// Note: not persisting until the filename is set with NewFileInput
