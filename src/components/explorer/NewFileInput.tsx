@@ -3,7 +3,8 @@ import { Input, Tooltip } from "antd";
 
 import { FileOutlined } from "@ant-design/icons";
 import { Flex } from "antd";
-import { TREE_TMP_KEY } from "constants/tree";
+import type { DataNode } from "antd/lib/tree";
+import { TREE_ROOT_KEY, TREE_TMP_KEY } from "constants/tree";
 import { useTree } from "contexts/tree/TreeContext";
 import { useState } from "react";
 
@@ -18,32 +19,56 @@ function NewFileInput({ path }: { path: string }) {
 			return;
 		}
 
-		const currentTree = await getTree();
-
-		if (!currentTree) {
+		if (!tree) {
 			return;
 		}
 
-		const isDuplicate = currentTree.some((node) => {
-			return node.isLeaf && node.key.toString() === `${path}/${inputValue}`;
-		});
+		let isDuplicate = false;
+
+		const parseAndFindDuplicate = (treeData: DataNode[]) => {
+			for (let i = 0; i < treeData.length; i++) {
+				const node = treeData[i];
+
+				const pathToCheck = `${path === TREE_ROOT_KEY ? `${path}/` : ""}${inputValue}`;
+
+				if (node.key.toString() === pathToCheck) {
+					isDuplicate = true;
+				}
+
+				if (node.children) {
+					parseAndFindDuplicate(node.children);
+				}
+			}
+		};
+
+		parseAndFindDuplicate(tree);
 
 		if (isDuplicate) {
 			setIsDuplicate(true);
 			return;
 		}
 
-		const newTree = currentTree.map((node) => {
-			if (node.key.toString().includes(TREE_TMP_KEY)) {
-				return {
-					...node,
-					key: `${path}/${inputValue}`,
-					title: inputValue,
-					icon: <FileOutlined />,
-				};
+		const newTree = [...tree];
+
+		const parseTreeAndUpdateNode = (treeData: DataNode[]) => {
+			for (let i = 0; i < treeData.length; i++) {
+				const node = treeData[i];
+
+				if (node.key.toString().includes(TREE_TMP_KEY)) {
+					node.key = `${path}/${inputValue}`;
+					node.title = inputValue;
+					node.icon = <FileOutlined />;
+
+					return;
+				}
+
+				if (node?.children) {
+					parseTreeAndUpdateNode(node?.children);
+				}
 			}
-			return node;
-		});
+		};
+
+		parseTreeAndUpdateNode(newTree);
 
 		overrideTree(newTree);
 	};
@@ -77,9 +102,25 @@ function NewFileInput({ path }: { path: string }) {
 			return;
 		}
 
-		const isDuplicate = tree.some((node) => {
-			return node.isLeaf && node.key.toString() === `${path}/${inputValue}`;
-		});
+		let isDuplicate = false;
+
+		const parseAndFindDuplicate = (treeData: DataNode[]) => {
+			for (let i = 0; i < treeData.length; i++) {
+				const node = treeData[i];
+
+				const pathToCheck = `${path === TREE_ROOT_KEY ? `${path}/` : ""}${inputValue}`;
+
+				if (node.key.toString() === pathToCheck) {
+					isDuplicate = true;
+				}
+
+				if (node.children) {
+					parseAndFindDuplicate(node.children);
+				}
+			}
+		};
+
+		parseAndFindDuplicate(tree);
 
 		if (!isDuplicate) {
 			setIsDuplicate(false);

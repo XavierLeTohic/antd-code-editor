@@ -33,8 +33,18 @@ function FileExplorer() {
 	const [selectedNode, setSelectedNode] =
 		useState<EventDataNode<DataNode> | null>(null);
 
-	const onAddFile = async () => {
-		await addFile();
+	const onAddFile = async (path = TREE_ROOT_KEY) => {
+		// Do nothing if multiple nodes are selected
+		if (selectedKeys.length > 1) {
+			return;
+		}
+
+		if (selectedKeys.length === 1) {
+			await addFile(selectedKeys[0].toString());
+		} else {
+			await addFile(path);
+		}
+
 		refresh();
 	};
 
@@ -97,7 +107,7 @@ function FileExplorer() {
 					<Tooltip title="New file...">
 						<Button
 							icon={<FileAddOutlined />}
-							onClick={onAddFile}
+							onClick={() => onAddFile(TREE_ROOT_KEY)}
 							type="text"
 							alt="Add file"
 						/>

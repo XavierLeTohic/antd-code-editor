@@ -30,12 +30,52 @@ export class TreeManager implements TreeManagerInterface {
 		// Filter out any tmp nodes
 		tree = tree.filter((node) => !node.key.toString().includes(TREE_TMP_KEY));
 
-		tree.push({
-			key: `${path}/${TREE_TMP_KEY}`,
-			icon: () => null,
-			title: <NewFileInput path={path} />,
-			isLeaf: true,
-		});
+		const isRoot = path === TREE_ROOT_KEY;
+
+		console.log("isRoot", isRoot, path);
+
+		if (isRoot) {
+			tree.push({
+				key: `${path}/${TREE_TMP_KEY}`,
+				icon: () => null,
+				title: <NewFileInput path={path} />,
+				isLeaf: true,
+			});
+		} else {
+			const findNodeAndInsert = (
+				treeData: DataNode[],
+				parentNode: DataNode | null,
+			) => {
+				for (let i = 0; i < treeData.length; i++) {
+					const node = treeData[i];
+
+					if (node.key.toString() === path) {
+						let nodeToInsert = node;
+
+						if (!path.endsWith("/") && parentNode) {
+							nodeToInsert = parentNode;
+						}
+
+						if (!nodeToInsert.children) {
+							nodeToInsert.children = [];
+						}
+
+						nodeToInsert.children?.push({
+							key: `${path}${TREE_TMP_KEY}`,
+							icon: () => null,
+							title: <NewFileInput path={path} />,
+							isLeaf: true,
+						});
+					}
+
+					if (node.children) {
+						findNodeAndInsert(node.children, node);
+					}
+				}
+			};
+
+			findNodeAndInsert(tree, null);
+		}
 
 		this.tree = tree;
 		// Note: not persisting until the filename is set with NewFileInput
@@ -58,21 +98,25 @@ export class TreeManager implements TreeManagerInterface {
 				isLeaf: true,
 			});
 		} else {
-			const findNodeAndInsert = (treeData: DataNode[]) => {
+			const findNodeAndInsert = (
+				treeData: DataNode[],
+				parentNode: DataNode | null,
+			) => {
 				for (let i = 0; i < treeData.length; i++) {
 					const node = treeData[i];
 
-					console.log("Checking node:", node.key.toString());
-					console.log("Path:", path);
-
 					if (node.key.toString() === path) {
-						if (!node.children) {
-							node.children = [];
+						let nodeToInsert = node;
+
+						if (!path.endsWith("/") && parentNode) {
+							nodeToInsert = parentNode;
 						}
 
-						console.log("Will add tmp folder", `${path}${TREE_TMP_KEY}`);
+						if (!nodeToInsert.children) {
+							nodeToInsert.children = [];
+						}
 
-						node.children?.push({
+						nodeToInsert.children?.push({
 							key: `${path}${TREE_TMP_KEY}/`,
 							icon: () => null,
 							title: <NewFolderInput path={path} />,
@@ -81,12 +125,12 @@ export class TreeManager implements TreeManagerInterface {
 					}
 
 					if (node.children) {
-						findNodeAndInsert(node.children);
+						findNodeAndInsert(node.children, node);
 					}
 				}
 			};
 
-			findNodeAndInsert(tree);
+			findNodeAndInsert(tree, null);
 		}
 
 		this.tree = tree;
