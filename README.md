@@ -9,13 +9,13 @@ A modern code editor integration for React applications, built with [monaco-edit
 > 
 > This project is in very early development. Currently working features:
 > - Basic Monaco editor rendering
-> - Simple flat file tree view
+> - File explorer with creation of files and folders
 > 
 > Most features are still under development.
 
 ## Roadmap
 
-- 📁 File Tree Navigation
+- 📁 File Tree Navigation ✅
 - 🔄 Drag and Drop Support
 - ⚙️ Customizable Editor Settings
 - 📑 Multi-model Editor Support
