@@ -16,10 +16,9 @@ A modern code editor integration for React applications, built with [monaco-edit
 ## Roadmap
 
 - 📁 File Tree Navigation ✅
-- 🔄 Drag and Drop Support
-- ⚙️ Customizable Editor Settings
 - 📑 Multi-model Editor Support
 - 🔍 Fuzzy File Search
+- ⚙️ Customizable Editor Settings
 - 🔎 Full-text Search (WASM-powered)
 - 💾 Multiple Storage Options:
   - In-Memory

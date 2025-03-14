@@ -25,23 +25,30 @@ function NewFileInput({ path }: { path: string }) {
 
 		let isDuplicate = false;
 
-		const parseAndFindDuplicate = (treeData: DataNode[]) => {
+		const parseAndFindDuplicate = (
+			treeData: DataNode[],
+			parentNode: DataNode | null,
+		) => {
 			for (let i = 0; i < treeData.length; i++) {
 				const node = treeData[i];
 
-				const pathToCheck = `${path === TREE_ROOT_KEY ? `${path}/` : ""}${inputValue}`;
+				let pathToCheck = `${path}/${inputValue}`;
+
+				if (!path.endsWith("/") && parentNode) {
+					pathToCheck = `${parentNode?.key.toString()}${inputValue}`;
+				}
 
 				if (node.key.toString() === pathToCheck) {
 					isDuplicate = true;
 				}
 
 				if (node.children) {
-					parseAndFindDuplicate(node.children);
+					parseAndFindDuplicate(node.children, node);
 				}
 			}
 		};
 
-		parseAndFindDuplicate(tree);
+		parseAndFindDuplicate(tree, null);
 
 		if (isDuplicate) {
 			setIsDuplicate(true);
@@ -104,23 +111,30 @@ function NewFileInput({ path }: { path: string }) {
 
 		let isDuplicate = false;
 
-		const parseAndFindDuplicate = (treeData: DataNode[]) => {
+		const parseAndFindDuplicate = (
+			treeData: DataNode[],
+			parentNode: DataNode | null,
+		) => {
 			for (let i = 0; i < treeData.length; i++) {
 				const node = treeData[i];
 
-				const pathToCheck = `${path === TREE_ROOT_KEY ? `${path}/` : ""}${inputValue}`;
+				let pathToCheck = `${path}/${inputValue}`;
+
+				if (!path.endsWith("/") && parentNode) {
+					pathToCheck = `${parentNode?.key.toString()}${inputValue}`;
+				}
 
 				if (node.key.toString() === pathToCheck) {
 					isDuplicate = true;
 				}
 
 				if (node.children) {
-					parseAndFindDuplicate(node.children);
+					parseAndFindDuplicate(node.children, node);
 				}
 			}
 		};
 
-		parseAndFindDuplicate(tree);
+		parseAndFindDuplicate(tree, null);
 
 		if (!isDuplicate) {
 			setIsDuplicate(false);
