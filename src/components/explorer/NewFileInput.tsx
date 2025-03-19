@@ -32,7 +32,7 @@ function NewFileInput({ path }: { path: string }) {
 			for (let i = 0; i < treeData.length; i++) {
 				const node = treeData[i];
 
-				let pathToCheck = `${path}/${inputValue}`;
+				let pathToCheck = `${path}${inputValue}`;
 
 				if (!path.endsWith("/") && parentNode) {
 					pathToCheck = `${parentNode?.key.toString()}${inputValue}`;
@@ -62,7 +62,7 @@ function NewFileInput({ path }: { path: string }) {
 				const node = treeData[i];
 
 				if (node.key.toString().includes(TREE_TMP_KEY)) {
-					node.key = `${path}/${inputValue}`;
+					node.key = `${path}${inputValue}`;
 					node.title = inputValue;
 					node.icon = <FileOutlined />;
 
@@ -118,7 +118,7 @@ function NewFileInput({ path }: { path: string }) {
 			for (let i = 0; i < treeData.length; i++) {
 				const node = treeData[i];
 
-				let pathToCheck = `${path}/${inputValue}`;
+				let pathToCheck = `${path}${inputValue}`;
 
 				if (!path.endsWith("/") && parentNode) {
 					pathToCheck = `${parentNode?.key.toString()}${inputValue}`;
@@ -160,13 +160,13 @@ function NewFileInput({ path }: { path: string }) {
 				<Input
 					placeholder="Enter file name"
 					size="small"
-					autoFocus
 					onPressEnter={onPressEnter}
 					onKeyDown={onFileNameKeyDown}
 					onBlur={onCancel}
 					onChange={onChange}
 					status={isDuplicate ? "error" : undefined}
 					suffix={<EnterOutlined />}
+					autoFocus
 				/>
 			</Tooltip>
 		</Flex>

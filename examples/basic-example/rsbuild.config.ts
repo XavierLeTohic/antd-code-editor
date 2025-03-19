@@ -4,7 +4,7 @@ import { pluginReact } from "@rsbuild/plugin-react";
 export default defineConfig({
 	plugins: [pluginReact()],
 	html: {
-		title: "Antd code editor example",
+		title: "Antd Monaco Editor",
 		template: "public/index.html",
 	},
 });

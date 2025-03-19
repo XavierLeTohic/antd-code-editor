@@ -18,7 +18,8 @@
 			"components/*": ["./src/components/*"],
 			"contexts/*": ["./src/contexts/*"],
 			"types/*": ["./src/types/*"],
-			"constants/*": ["./src/constants/*"]
+			"constants/*": ["./src/constants/*"],
+			"utils/*": ["./src/utils/*"]
 		}
 	},
 	"exclude": ["node_modules", "dist"],

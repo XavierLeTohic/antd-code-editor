@@ -1,6 +1,6 @@
 import Editor from "@monaco-editor/react";
 
-import AntdEditorHeader from "components/layout/AntdEditorHeader";
+import AntdEditorHeader from "components/header";
 import AntdSplitterLayout from "components/layout/AntdSplitterLayout";
 import { InMemoryPersister, PersisterProvider } from "contexts/persister";
 import { TreeProvider } from "contexts/tree/TreeContext";

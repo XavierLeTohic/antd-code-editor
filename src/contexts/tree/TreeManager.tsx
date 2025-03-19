@@ -6,6 +6,8 @@ import NewFolderInput from "components/explorer/NewFolderInput";
 import { TREE_ROOT_KEY, TREE_TMP_KEY } from "constants/tree";
 import type { PersisterStrategy } from "types/persister";
 import type { TreeData, TreeManagerInterface } from "types/tree";
+import { cleanupTmpNodes } from "utils/nodes";
+
 export class TreeManager implements TreeManagerInterface {
 	private tree: TreeData = [];
 
@@ -25,20 +27,18 @@ export class TreeManager implements TreeManagerInterface {
 
 	async addFile(path = TREE_ROOT_KEY): Promise<void> {
 		const existingTree = await this.getTree();
-		let tree = existingTree ? [...existingTree] : [];
+		const tree = existingTree ? [...existingTree] : [];
 
-		// Filter out any tmp nodes
-		tree = tree.filter((node) => !node.key.toString().includes(TREE_TMP_KEY));
+		// Cleanup any tmp nodes
+		cleanupTmpNodes(tree);
 
-		const isRoot = path === TREE_ROOT_KEY;
-
-		console.log("isRoot", isRoot, path);
+		const isRoot = path === TREE_ROOT_KEY || path.split("/").length === 2;
 
 		if (isRoot) {
 			tree.push({
-				key: `${path}/${TREE_TMP_KEY}`,
+				key: `${TREE_ROOT_KEY}/${TREE_TMP_KEY}`,
 				icon: () => null,
-				title: <NewFileInput path={path} />,
+				title: <NewFileInput path={TREE_ROOT_KEY} />,
 				isLeaf: true,
 			});
 		} else {
@@ -54,6 +54,15 @@ export class TreeManager implements TreeManagerInterface {
 
 						if (!path.endsWith("/") && parentNode) {
 							nodeToInsert = parentNode;
+						} else if (!path.endsWith("/") && !parentNode) {
+							// this means it's the root
+							tree.push({
+								key: `${TREE_ROOT_KEY}/${TREE_TMP_KEY}`,
+								icon: () => null,
+								title: <NewFileInput path={TREE_ROOT_KEY} />,
+								isLeaf: true,
+							});
+							return;
 						}
 
 						if (!nodeToInsert.children) {
@@ -83,18 +92,18 @@ export class TreeManager implements TreeManagerInterface {
 
 	async addDirectory(path = TREE_ROOT_KEY): Promise<void> {
 		const existingTree = await this.getTree();
-		let tree = existingTree ? [...existingTree] : [];
+		const tree = existingTree ? [...existingTree] : [];
 
-		// Filter out any tmp nodes
-		tree = tree.filter((node) => !node.key.toString().includes(TREE_TMP_KEY));
+		// Cleanup any tmp nodes
+		cleanupTmpNodes(tree);
 
-		const isRoot = path === TREE_ROOT_KEY;
+		const isRoot = path === TREE_ROOT_KEY || path.split("/").length === 2;
 
 		if (isRoot) {
 			tree.push({
-				key: `${path}/${TREE_TMP_KEY}`,
+				key: `${TREE_ROOT_KEY}/${TREE_TMP_KEY}/`,
 				icon: () => null,
-				title: <NewFolderInput path={path} />,
+				title: <NewFolderInput path={TREE_ROOT_KEY} />,
 				isLeaf: true,
 			});
 		} else {
@@ -110,8 +119,15 @@ export class TreeManager implements TreeManagerInterface {
 
 						if (!path.endsWith("/") && parentNode) {
 							nodeToInsert = parentNode;
+						} else if (!path.endsWith("/") && !parentNode) {
+							// this means it's the root
+							tree.push({
+								key: `${TREE_ROOT_KEY}/${TREE_TMP_KEY}/`,
+								icon: () => null,
+								title: <NewFolderInput path={TREE_ROOT_KEY} />,
+							});
+							return;
 						}
-
 						if (!nodeToInsert.children) {
 							nodeToInsert.children = [];
 						}

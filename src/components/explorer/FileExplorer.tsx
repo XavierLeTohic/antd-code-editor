@@ -22,7 +22,7 @@ import { usePersister } from "contexts/persister";
 import { useTree } from "contexts/tree/TreeContext";
 import { type Key, useRef, useState } from "react";
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 function FileExplorer() {
 	const { tree, addFile, addDirectory, refresh } = useTree();
@@ -99,9 +99,12 @@ function FileExplorer() {
 		<>
 			<Flex justify="space-between" align="center">
 				<div style={{ margin: "0 8px" }}>
-					<Text style={{ whiteSpace: "nowrap" }} strong>
-						Files
-					</Text>
+					<Title
+						level={5}
+						style={{ whiteSpace: "nowrap", padding: 0, margin: 0 }}
+					>
+						Project
+					</Title>
 				</div>
 				<div>
 					<Tooltip title="New file...">
@@ -140,6 +143,8 @@ function FileExplorer() {
 					onRightClick={onRightClick as any}
 					onExpand={onExpand}
 					draggable={{ icon: false }}
+					style={{ backgroundColor: "transparent" }}
+					rootStyle={{ backgroundColor: "transparent" }}
 					showLine
 				/>
 			</Dropdown>

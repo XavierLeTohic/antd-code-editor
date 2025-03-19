@@ -12,6 +12,7 @@ export default defineConfig({
       'components': './src/components/*',
       'contexts': './src/contexts/*',
       'constants': './src/constants/*',
+      'utils': './src/utils/*',
     }
   },
   lib: [
